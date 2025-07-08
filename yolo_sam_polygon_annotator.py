@@ -6,7 +6,7 @@ from ultralytics import YOLO
 from segment_anything import sam_model_registry, SamAutomaticMaskGenerator
 import torch
 
-# ==== 🔧 Paths ====
+# Paths ====
 VIDEO_PATH = r"D:\OneDrive\Desktop\Assignment_Suvit_Kumar\conversion_file_fixed.mp4"
 PROJECT_ROOT = "yolo_sam_precise_pipeline"
 FRAMES_DIR = os.path.join(PROJECT_ROOT, "frames")
@@ -14,11 +14,11 @@ ANNOTATED_DIR = os.path.join(PROJECT_ROOT, "annotated")
 ANNOTATIONS_JSON = os.path.join(PROJECT_ROOT, "annotations.json")
 ANNOTATED_VIDEO_PATH = os.path.join(PROJECT_ROOT, "annotated_output.mp4")
 
-# ==== 📁 Setup ====
+# Setup ====
 os.makedirs(FRAMES_DIR, exist_ok=True)
 os.makedirs(ANNOTATED_DIR, exist_ok=True)
 
-# ==== 🖼 Extract Frames ====
+# Extract Frames 
 def extract_frames(video_path, output_dir, fps=3):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -36,9 +36,9 @@ def extract_frames(video_path, output_dir, fps=3):
             saved += 1
         count += 1
     cap.release()
-    print(f"✅ Extracted {saved} frames.")
+    print(f"Extracted {saved} frames.")
 
-# ==== 🧠 Load Models ====
+# Load Models 
 yolo_model = YOLO("yolov8n-seg.pt")  # Lightweight version
 sam = sam_model_registry["vit_b"](checkpoint=r"D:\OneDrive\Desktop\Assignment_Suvit_Kumar\sam_vit_b_01ec64.pth")
 sam.to("cpu")
@@ -46,7 +46,7 @@ mask_generator = SamAutomaticMaskGenerator(sam)
 
 TARGET_CLASSES = ['car', 'person', 'bicycle']
 
-# ==== 📐 Helper: IoU ====
+# Helper: IoU 
 def compute_iou(boxA, boxB):
     xA = max(boxA[0], boxB[0])
     yA = max(boxA[1], boxB[1])
@@ -58,7 +58,7 @@ def compute_iou(boxA, boxB):
     iou = interArea / float(boxAArea + boxBArea - interArea + 1e-6)
     return iou
 
-# ==== 🎯 Annotate Frames ====
+# Annotate Frames 
 def annotate_frames():
     annotations = []
     for fname in sorted(os.listdir(FRAMES_DIR)):
@@ -113,9 +113,9 @@ def annotate_frames():
 
     with open(ANNOTATIONS_JSON, "w") as f:
         json.dump(annotations, f, indent=2)
-    print(f"✅ Saved {len(annotations)} annotated frames to JSON.")
+    print(f" Saved {len(annotations)} annotated frames to JSON.")
 
-# ==== 🎥 Create Video from Annotated Frames ====
+# Create Video from Annotated Frames 
 def create_video_from_frames(image_folder, output_path, fps=3):
     images = sorted([img for img in os.listdir(image_folder) if img.endswith(".jpg")])
     if not images:
@@ -135,8 +135,8 @@ def create_video_from_frames(image_folder, output_path, fps=3):
     out.release()
     print(f"🎬 Annotated video saved as: {output_path}")
 
-# ==== 🚀 Run Pipeline ====
+# Run Pipeline 
 extract_frames(VIDEO_PATH, FRAMES_DIR)
 annotate_frames()
 create_video_from_frames(ANNOTATED_DIR, ANNOTATED_VIDEO_PATH)
-print("🎉 All Done: YOLO + SAM with polygon + video output.")
+print(" All Done: YOLO + SAM with polygon + video output.")
