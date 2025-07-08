@@ -103,9 +103,3 @@ python yolo_sam_video_output.py
 
 ---
 
-## 🛫 Sample Use Case
-Want to label traffic scenes with precise polygons? This repo gives you a plug-and-play toolchain for that.
-
----
-
-For questions, improvements, or collaborations, feel free to reach out!
